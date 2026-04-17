@@ -52,11 +52,11 @@ def require_api_key(func):
 
 @app.route('/extract_pdf', methods=['POST'])
 @require_api_key
-def extract_pdf(request=None):
+def extract_pdf(arg_request=None):
     """
     HTTP Cloud Function.
     Args:
-        request (flask.Request): The request object.
+        arg_request (flask.Request): The request object.
         <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>
     Returns:
         The response text, or any set of values that can be turned into a
@@ -64,10 +64,11 @@ def extract_pdf(request=None):
         <https://flask.palletsprojects.com/en/1.1.x/api/#flask.make_response>.
     """
     try:
-        # In Cloud Functions, request is passed as an argument. 
-        # But Flask's global 'request' object also works fine. 
-        # Using the passed object is standard practice.
-        data = request.get_json(silent=True)
+        # Use the passed argument if provided (Cloud Functions), 
+        # otherwise fallback to the global flask request (Local Testing).
+        actual_request = arg_request if arg_request is not None else request
+        
+        data = actual_request.get_json(silent=True)
         if not data or 'pdf_base64' not in data:
             return jsonify({"error": "Missing 'pdf_base64' in JSON body"}), 400
 
