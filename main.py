@@ -41,6 +41,8 @@ def require_api_key(func):
             return jsonify({"error": "Missing or invalid Authorization header"}), 401
         
         token = auth_header.split(' ')[1]
+        print(f"AUTH Token: {token}")
+        print(f"EXPECTED Token: {EXPECTED_API_KEY}")
         if token != EXPECTED_API_KEY:
             return jsonify({"error": "Unauthorized API Key"}), 401
             
